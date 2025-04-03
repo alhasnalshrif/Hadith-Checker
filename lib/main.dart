@@ -1,15 +1,10 @@
 // lib/main.dart
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hadith_cheker/blocs/hadith_bloc.dart';
 import 'package:hadith_cheker/models/hadith.dart';
-import 'package:hadith_cheker/services/url_handler_service.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await UrlHandlerService.initialize();
+void main() {
   runApp(const HadithScraperApp());
 }
 
@@ -25,7 +20,9 @@ class HadithScraperApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
-          textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 16)),
+          textTheme: const TextTheme(
+            bodyMedium: TextStyle(fontSize: 16),
+          ),
         ),
         home: const HadithSearchScreen(),
       ),
@@ -42,20 +39,9 @@ class HadithSearchScreen extends StatefulWidget {
 
 class _HadithSearchScreenState extends State<HadithSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late StreamSubscription<String> _textStreamSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _textStreamSubscription = UrlHandlerService.textStream.listen((sharedText) {
-      _searchController.text = sharedText;
-      _searchHadith(context);
-    });
-  }
 
   @override
   void dispose() {
-    _textStreamSubscription.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -148,9 +134,8 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             SelectionArea(
               contextMenuBuilder: (context, editableTextState) {
                 final selection = editableTextState.textEditingValue.selection;
-                final selectedText = selection.textInside(
-                  editableTextState.textEditingValue.text,
-                );
+                final selectedText =
+                    selection.textInside(editableTextState.textEditingValue.text);
                 return AdaptiveTextSelectionToolbar.buttonItems(
                   anchors: editableTextState.contextMenuAnchors,
                   buttonItems: [
@@ -161,12 +146,11 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
                         if (selectedText.isNotEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Checking: "$selectedText"'),
-                            ),
+                                content: Text('Checking: "$selectedText"')),
                           );
-                          context.read<HadithBloc>().add(
-                            SearchHadithEvent(selectedText),
-                          );
+                          context
+                              .read<HadithBloc>()
+                              .add(SearchHadithEvent(selectedText));
                         }
                         Navigator.pop(context);
                       },
@@ -183,10 +167,8 @@ class _HadithSearchScreenState extends State<HadithSearchScreen> {
             Text('Narrated: ${hadith.english.hadithNarrated}'),
             Text('Collection: ${hadith.collection} | Book: ${hadith.book}'),
             if (hadith.english.grade != null)
-              Text(
-                'Grade: ${hadith.english.grade}',
-                style: const TextStyle(color: Colors.blue),
-              ),
+              Text('Grade: ${hadith.english.grade}',
+                  style: const TextStyle(color: Colors.blue)),
             const SizedBox(height: 8),
             Text(
               hadith.arabic.hadith,

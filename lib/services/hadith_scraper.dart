@@ -35,76 +35,63 @@ class HadithScraper {
     if (allHadith == null) return [];
 
     final hadithElements = document.querySelectorAll('.boh');
-    final results =
-        hadithElements.map((info) {
-          final collection =
-              info.querySelectorAll('.nounderline')[0].text.trim();
-          final book = info.querySelectorAll('.nounderline')[1].text.trim();
+    final results = hadithElements.map((info) {
+      final collection = info.querySelectorAll('.nounderline')[0].text.trim();
+      final book = info.querySelectorAll('.nounderline')[1].text.trim();
 
-          final englishNarrated =
-              info.querySelector('.english_hadith_narrated')?.text.trim() ?? '';
-          final englishHadith =
-              info
-                  .querySelector('.english_hadith_full .text_details')
-                  ?.text
-                  .trim() ??
-              '';
-          final englishFullHadith =
-              info.querySelector('.english_hadith_full')?.text.trim() ?? '';
-          final englishGrade =
-              info.querySelector('.english_hadith_full .grade')?.text.trim();
+      final englishNarrated =
+          info.querySelector('.english_hadith_narrated')?.text.trim() ?? '';
+      final englishHadith =
+          info.querySelector('.english_hadith_full .text_details')?.text.trim() ?? '';
+      final englishFullHadith =
+          info.querySelector('.english_hadith_full')?.text.trim() ?? '';
+      final englishGrade =
+          info.querySelector('.english_hadith_full .grade')?.text.trim();
 
-          final arabicNarrated =
-              info.querySelector('.arabic_hadith_narrated')?.text.trim() ?? '';
-          final arabicHadith =
-              info
-                  .querySelector('.arabic_hadith_full .text_details')
-                  ?.text
-                  .trim() ??
-              '';
-          final arabicFullHadith =
-              info.querySelector('.arabic_hadith_full')?.text.trim() ?? '';
-          final arabicGrade =
-              info.querySelector('.arabic_hadith_full .grade')?.text.trim();
+      final arabicNarrated =
+          info.querySelector('.arabic_hadith_narrated')?.text.trim() ?? '';
+      final arabicHadith =
+          info.querySelector('.arabic_hadith_full .text_details')?.text.trim() ?? '';
+      final arabicFullHadith =
+          info.querySelector('.arabic_hadith_full')?.text.trim() ?? '';
+      final arabicGrade =
+          info.querySelector('.arabic_hadith_full .grade')?.text.trim();
 
-          final reference = info.querySelector('.hadith_reference');
-          final refText = reference?.text.trim().split('\n') ?? [];
-          final hadithNumberInBook =
-              refText.isNotEmpty ? refText[0].trim() : 'Unknown';
-          final hadithNumberInCollection =
-              refText.length > 1 ? refText[1].trim() : 'Unknown';
-          final collectionId = collection.toLowerCase().replaceAll(' ', '');
-          final bookId = book.toLowerCase().replaceAll(' ', '');
-          final refUrl = '$_baseUrl/$collectionId/$bookId/$hadithNumberInBook';
+      final reference = info.querySelector('.hadith_reference');
+      final refText = reference?.text.trim().split('\n') ?? [];
+      final hadithNumberInBook = refText.isNotEmpty ? refText[0].trim() : 'Unknown';
+      final hadithNumberInCollection =
+          refText.length > 1 ? refText[1].trim() : 'Unknown';
+      final collectionId = collection.toLowerCase().replaceAll(' ', '');
+      final bookId = book.toLowerCase().replaceAll(' ', '');
+      final refUrl = '$_baseUrl/$collectionId/$bookId/$hadithNumberInBook';
 
-          return Hadith(
-            collection: collection,
-            book: book,
-            english: EnglishText(
-              hadithNarrated: englishNarrated,
-              hadith: englishHadith,
-              fullHadith: englishFullHadith,
-              grade: englishGrade,
-            ),
-            arabic: ArabicText(
-              hadithNarrated: arabicNarrated,
-              hadith: arabicHadith,
-              fullHadith: arabicFullHadith,
-              grade: arabicGrade,
-            ),
-            reference: Reference(
-              hadithNumberInBook: hadithNumberInBook,
-              hadithNumberInCollection: hadithNumberInCollection,
-              url: refUrl,
-            ),
-          );
-        }).toList();
+      return Hadith(
+        collection: collection,
+        book: book,
+        english: EnglishText(
+          hadithNarrated: englishNarrated,
+          hadith: englishHadith,
+          fullHadith: englishFullHadith,
+          grade: englishGrade,
+        ),
+        arabic: ArabicText(
+          hadithNarrated: arabicNarrated,
+          hadith: arabicHadith,
+          fullHadith: arabicFullHadith,
+          grade: arabicGrade,
+        ),
+        reference: Reference(
+          hadithNumberInBook: hadithNumberInBook,
+          hadithNumberInCollection: hadithNumberInCollection,
+          url: refUrl,
+        ),
+      );
+    }).toList();
 
     // Cache results
     await prefs.setString(
-      cacheKey,
-      jsonEncode(results.map((h) => h.toJson()).toList()),
-    );
+        cacheKey, jsonEncode(results.map((h) => h.toJson()).toList()));
     return results;
   }
 }

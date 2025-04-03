@@ -41,9 +41,7 @@ class HadithBloc extends Bloc<HadithEvent, HadithState> {
   }
 
   Future<void> _onSearchHadith(
-    SearchHadithEvent event,
-    Emitter<HadithState> emit,
-  ) async {
+      SearchHadithEvent event, Emitter<HadithState> emit) async {
     if (event.query.trim().isEmpty) {
       emit(HadithError('Please enter a search term'));
       return;
